@@ -1,3 +1,4 @@
+var paletteColors = 4;
 function loadImage() {
     var input, file, fr, img;
 
@@ -35,9 +36,13 @@ function loadImage() {
         console.log(img.width + "x" + img.height);
         //load image into canvas
 
+        //TODO: scale in a proper way, ёпта
         var canvas = document.getElementById('mycanvas');
         wx = (img.width > 500) ? 500 : img.width;
+        wx = img.width;
         hx = img.height;
+
+
         if (img.width > 500  && img.width<img.height)
         {
             wx = 500;
@@ -45,7 +50,7 @@ function loadImage() {
         {
             hx = 500;
         }
-        console.log(wx + 'X' + hx);
+
         canvas.setAttribute('width', wx);
         canvas.setAttribute('height', hx);
 
@@ -57,8 +62,14 @@ function loadImage() {
 
 
         context.drawImage(img, 0, 0, wx, hx); //image is loaded ook.
-        var palette = getPalette(context, 8);
-        drawPalette(document.getElementById('hist_canvas').getContext('2d'), palette);
+        var palette = getPalette(context, paletteColors);
+        oldData = context.getImageData(0,0, canvas.width, canvas.height);
+        oldX = canvas.width;
+        oldY = canvas.height;
+        canvas.height = (canvas.height + 500);
+        canvas.getContext('2d').putImageData(oldData,0,0);
+
+        drawPalette(context, palette, [oldX, oldY] );
     }
 
     function getPalette(ctx, colors) {
@@ -78,27 +89,42 @@ function loadImage() {
         }
 
         var cmap = MMCQ.quantize(pixArray, colors);
-        return cmap.palette();
+
+        return cmap.palette().map(
+            function(v){
+                return( "#" + v[0].toString(16) + v[1].toString(16) + v[2].toString(16) );
+            }
+        ).sort();
     }
 
-    function drawPalette(ctx, palette)
+    function sortPalette(list)
+    {
+
+    }
+
+    function drawPalette(ctx, palette, coords)
     {
         console.debug(ctx);
-        var step = 20;
-        var start = 0;
-        $.each(palette, function(k,v){
-            var fillStyle = "#" + v[0].toString(16) + v[1].toString(16) + v[2].toString(16);
-            console.log(fillStyle);
-            ctx.fillStyle = fillStyle;
-            var box = 40;
-            ctx.fillRect (start,box+box,50,box);
-                start += 40;
+        var startX = 0
+            , startY = coords[1]
+            , box = 15
+            , boxWidth  = box
+            , boxHeight = box;
+        console.debug(startX, startY, coords);
+
+        $.each(palette, function(k,v) {
+            //var fillStyle = "#" + v[0].toString(16) + v[1].toString(16) + v[2].toString(16);
+            ctx.fillStyle = v;
+            ctx.fillRect (startX,startY,boxWidth,boxHeight);
             ctx.stroke();
+            ctx.font = "12px sans-serif";
+            ctx.fillStyle = '#000';
+            ctx.fillText(v, startX + boxWidth*1.2, startY + boxHeight);
+            startY += box;
+
         });
         ctx.fillStyle = '#65605c';
-        //ctx.fillRect(10,10,70,70);
     }
-
 }
 
 

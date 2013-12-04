@@ -1,20 +1,84 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-<title>Palette with quantizer</title>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="js/palette2.js"></script>
-<script type="text/javascript" src="js/quantize.js"></script>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <title>Palette with quantizer</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="js/palette2.js"></script>
+  <script type="text/javascript" src="js/quantize.js"></script>
+  <style>
+    #holder {
+      border: 10px dashed #ccc;
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+    }
+
+    #holder.hover {
+      border: 10px dashed #333;
+    }
+  </style>
 </head>
 
 <body>
-<form action='#' onsubmit="return false;">
-<input type='file' id='imgfile'>
-<input type='button' id='btnLoad' value='Load'>
-<br/>
-  <canvas id="mycanvas"></canvas>
-  <canvas id="hist_canvas"></canvas>
-</form>
+<div id="container">
+
+  <div id="holder">
+    <p id="html5_drag_demotext">
+      Drag an image from your desktop to the drop zone.
+    </p>
+    <p>
+      or just upload a file
+    <form action='#' onsubmit="return false;">
+      <input type='file' id='imgfile'>
+      <input type='button' id='btnLoad' value='Load'>
+      <br/>
+    </form>
+    </p>
+  </div>
+  <div id="status"></div>
+
+</div>
+
+
+
+<canvas id="mycanvas"></canvas>
+<canvas id="hist_canvas"></canvas>
+<script>
+  var holder = document.getElementById('holder'),
+   state = document.getElementById('status');
+
+  holder.ondragover = function () {
+    this.className = 'hover';
+    return false;
+  };
+  holder.ondragend = function () {
+    this.className = '';
+    return false;
+  };
+  holder.ondrop = function (e) {
+    this.className = '';
+    e.preventDefault();
+
+    var file = e.dataTransfer.files[0]
+     , reader = new FileReader();
+
+    reader.onload = function (event) {
+      holder.style.background = 'url(' + event.target.result + ') no-repeat center';
+      createImage(reader);
+    };
+    reader.readAsDataURL(file);
+
+    return false;
+  }
+
+
+  $(document).ready(function () {
+    $('#btnLoad').click(function () {
+      loadImage();
+      //imager.getColors();
+    });
+  });
+</script>
 </body>
 </html>

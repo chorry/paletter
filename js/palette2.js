@@ -1,6 +1,14 @@
 var paletteColors = 4;
 var input, file, fr, img;
 
+var tmpl = function (colorValue) {
+    return '<div class="colorbox">' + colorValue + '</div>'
+};
+
+function getPaletteColors() {
+    return document.getElementById('colorNum').value;
+}
+
 function createImage(fReader) {
     img = document.createElement('img');
     img.onload = imageLoaded;
@@ -29,18 +37,28 @@ function loadImage() {
     else {
         file = input.files[0];
         fr = new FileReader();
-        fr.onload = ( function(fr){ return function(){ createImage(fr) }; } )(fr);
+        fr.onload = (function (fr) {
+            return function () {
+                createImage(fr)
+            };
+        })(fr);
         fr.readAsDataURL(file);
     }
 }
 
 
 function imageLoaded() {
-    console.log(img.width + "x" + img.height);
-    //load image into canvas
-
     //TODO: scale in a proper way, ёпта
-    var canvas = document.getElementById('mycanvas');
+
+    var canvas = document.createElement('canvas');
+    canvas.id     = "CursorLayer";
+    canvas.width  = 1224;
+    canvas.height = 768;
+    canvas.style.zIndex   = 8;
+    canvas.style.position = "absolute";
+    canvas.style.border   = "1px solid";
+    document.body.appendChild(canvas);
+    //var canvas = document.getElementById('mycanvas');
     wx = (img.width > 500) ? 500 : img.width;
     wx = img.width;
     hx = img.height;
@@ -51,6 +69,7 @@ function imageLoaded() {
     } else if (img.height > 500 && img.width > img.height) {
         hx = 500;
     }
+    wx = hx = 500;
 
     canvas.setAttribute('width', wx);
     canvas.setAttribute('height', hx);
@@ -63,16 +82,33 @@ function imageLoaded() {
 
 
     context.drawImage(img, 0, 0, wx, hx); //image is loaded ook.
-    var palette = getPalette(context, paletteColors);
+    var palette = getPalette(context, getPaletteColors());
+    canvas.remove();
+    /*
     oldData = context.getImageData(0, 0, canvas.width, canvas.height);
     oldX = canvas.width;
     oldY = canvas.height;
     canvas.height = (canvas.height + 500);
-    canvas.getContext('2d').putImageData(oldData, 0, 0);
-
-    drawPalette(context, palette, [oldX, oldY]);
+    canvas.style.display = 'none';
+    //canvas.getContext('2d').putImageData(oldData, 0, 0);
+    */
+    //drawPalette(context, palette, [oldX, oldY]);
+    createPaletteBoxes(palette)
 }
 
+function createPaletteBoxes(palette)
+{
+    $('#holder_result').empty();
+    $.each(palette, function (k, v) {
+        if (k == getPaletteColors())
+            return; //workaround for quantized color number
+
+        var textColor = parseInt('FFFFFF',16) - parseInt(v,16);
+        console.debug(textColor);
+            textColor = '#' + textColor.toString(16);
+        $('#holder_result').append($('<div class="colorbox-holder"><div class="colorbox-box" style="background-color:rgb('+v+')"><span style="color:'+textColor+'">#'+(k+1)+':' + v + '</span></div></div>'));
+    });
+}
 
 function drawPalette(ctx, palette, coords) {
     console.debug(ctx);
@@ -112,7 +148,10 @@ function getPalette(ctx, colors) {
         }
     }
 
+    console.log('quantize with ' + colors + ' colors');
     var cmap = MMCQ.quantize(pixArray, colors);
+
+    return cmap.palette();
 
     return cmap.palette().map(
         function (v) {

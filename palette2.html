@@ -6,29 +6,58 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script type="text/javascript" src="js/palette2.js"></script>
   <script type="text/javascript" src="js/quantize.js"></script>
+  <script type="text/javascript" src="js/simple-slider.min.js"></script>
+  <link href="css/simple-slider.css" rel="stylesheet" type="text/css"/>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
   <style>
     #holder {
       border: 10px dashed #ccc;
-      width: 300px;
-      height: 300px;
+      width: 500px;
+      height: 500px;
       margin: 20px auto;
     }
 
     #holder.hover {
       border: 10px dashed #333;
     }
+
+    .colorbox-holder {
+      float: left;
+    }
+    .colorbox-box {
+      height: 100px; /*Specify Height*/
+      width:  100px; /*Specify Width*/
+      line-height: 100px; /*Specify Height*/
+      text-align: center;
+    }
+    .colorbox-text {
+      text-align: center;
+    }
+
   </style>
 </head>
 
 <body>
-<div id="container">
+<div id="container" class="container">
+
+  <div class="row"></div>
+  <div class="row">
+
+    <div class="container_colorNum">
+      Adjust colors quantity:
+      <input id="colorNum" type="text" value="5" data-slider="true" data-slider-range="2,20" data-slider-step="1">
+    </div>
+  </div>
+
 
   <div id="holder">
     <p id="html5_drag_demotext">
       Drag an image from your desktop to the drop zone.
     </p>
+
     <p>
       or just upload a file
+
     <form action='#' onsubmit="return false;">
       <input type='file' id='imgfile'>
       <input type='button' id='btnLoad' value='Load'>
@@ -36,14 +65,12 @@
     </form>
     </p>
   </div>
-  <div id="status"></div>
-
+  <div id="holder_result">
+    <canvas id="mycanvas"></canvas>
+  </div>
 </div>
 
 
-
-<canvas id="mycanvas"></canvas>
-<canvas id="hist_canvas"></canvas>
 <script>
   var holder = document.getElementById('holder'),
    state = document.getElementById('status');
@@ -79,6 +106,19 @@
       //imager.getColors();
     });
   });
+
+  $("[data-slider]")
+   .each(function () {
+     var input = $(this);
+     $("<span>")
+      .addClass("output")
+      .insertAfter($(this));
+   })
+   .bind("slider:ready slider:changed", function (event, data) {
+     $(this)
+      .nextAll(".output:first")
+      .html(data.value.toFixed(0));
+   });
 </script>
 </body>
 </html>

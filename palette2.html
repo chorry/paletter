@@ -10,10 +10,10 @@
   <link href="css/simple-slider.css" rel="stylesheet" type="text/css"/>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <style>
-    #holder {
+    #holder, #holder_result {
       border: 10px dashed #ccc;
-      width: 500px;
-      height: 500px;
+      width: 520px;
+      height: 420px;
       margin: 20px auto;
     }
 
@@ -21,16 +21,23 @@
       border: 10px dashed #333;
     }
 
+
     .colorbox-holder {
       float: left;
     }
+
     .colorbox-box {
       height: 100px; /*Specify Height*/
-      width:  100px; /*Specify Width*/
+      width: 100px; /*Specify Width*/
       line-height: 100px; /*Specify Height*/
       text-align: center;
     }
+
     .colorbox-text {
+      text-align: center;
+    }
+
+    .container_colorNum {
       text-align: center;
     }
 
@@ -40,34 +47,43 @@
 <body>
 <div id="container" class="container">
 
-  <div class="row"></div>
   <div class="row">
+    <div class="col-lg-4"></div>
+    <div class="col-lg-4">
+      <div class="container_colorNum">
+        Adjust colors quantity:
+        <input id="colorNum" type="text" value="12" data-slider="true" data-slider-range="2,20" data-slider-step="1">
+      </div>
+    </div>
+    <div class="col-lg-4"></div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div id="holder">
+        <p id="html5_drag_demotext">
+          Drag an image from your desktop to the drop zone.
+        </p>
 
-    <div class="container_colorNum">
-      Adjust colors quantity:
-      <input id="colorNum" type="text" value="5" data-slider="true" data-slider-range="2,20" data-slider-step="1">
+        <p>
+          or just upload a file
+
+        <form action='#' onsubmit="return false;">
+          <input type='file' id='imgfile'>
+          <input type='button' id='btnLoad' value='Load'>
+          <br/>
+        </form>
+        </p>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div id="holder_result">
+        <canvas id="mycanvas"></canvas>
+      </div>
     </div>
   </div>
 
 
-  <div id="holder">
-    <p id="html5_drag_demotext">
-      Drag an image from your desktop to the drop zone.
-    </p>
 
-    <p>
-      or just upload a file
-
-    <form action='#' onsubmit="return false;">
-      <input type='file' id='imgfile'>
-      <input type='button' id='btnLoad' value='Load'>
-      <br/>
-    </form>
-    </p>
-  </div>
-  <div id="holder_result">
-    <canvas id="mycanvas"></canvas>
-  </div>
 </div>
 
 

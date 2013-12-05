@@ -10,8 +10,12 @@ function getPaletteColors() {
 }
 
 function createImage(fReader) {
+    $("body img").remove();
     img = document.createElement('img');
-    img.onload = imageLoaded;
+    img.onload = function() {
+        document.getElementById('holder').style.background = 'url(' + fReader.result + ') no-repeat center';
+        imageLoaded();
+    };
     img.style.display = 'none'; // If you don't want it showing
     img.src = fReader.result;
     document.body.appendChild(img);
@@ -100,13 +104,13 @@ function createPaletteBoxes(palette)
 {
     $('#holder_result').empty();
     $.each(palette, function (k, v) {
-        if (k == getPaletteColors())
-            return; //workaround for quantized color number
+        //if (k == getPaletteColors())
+        //    return; //workaround for quantized color number
 
         var textColor = parseInt('FFFFFF',16) - parseInt(v,16);
-        console.debug(textColor);
+        console.debug(k, textColor);
             textColor = '#' + textColor.toString(16);
-        $('#holder_result').append($('<div class="colorbox-holder"><div class="colorbox-box" style="background-color:rgb('+v+')"><span style="color:'+textColor+'">#'+(k+1)+':' + v + '</span></div></div>'));
+        $('#holder_result').append($('<div class="colorbox-holder"><div class="colorbox-box" style="background-color:rgb('+v+')"><span style="color:'+textColor+'">' + v + '</span></div></div>'));
     });
 }
 
